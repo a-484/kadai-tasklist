@@ -17,13 +17,31 @@ class TasksController extends Controller
     // getでtasks/にアクセスされた場合の「一覧表示処理」
     public function index()
     {
-        // メッセージ一覧を取得
-        $tasks = Task::all();
-
-        // メッセージ一覧ビューでそれを表示
-        return view('tasks.index', [
-            'tasks' => $tasks,
-        ]);
+        $data = [];
+        
+        //ログインしているかチェック
+        if (\Auth::check()) {
+            
+            // 認証済みユーザを取得
+            $user = \Auth::user();
+            
+            //タスクデータを取得
+            $tasks = $user->tasks()->get();
+            
+            //配列に格納
+            $data = [
+                'user' => $user,
+                'tasks' => $tasks,
+            ];
+            
+            return view('tasks.index', $data);
+        
+        //ログインしていない場合
+        }else{
+            
+            //ログイン画面を表示
+            return view('auth.login');
+        }
     }
 
     /**
@@ -32,15 +50,24 @@ class TasksController extends Controller
      * @return \Illuminate\Http\Response
      */
      
-    // getでtasks/createにアクセスされた場合の「新規登録画面表示処理」
+    //新規タスク作成画面を表示するため
     public function create()
     {
-        $task = new Task;
-
-        //タスク作成ビューを表示
-        return view('tasks.create', [
-            'task' => $task,
-        ]);
+        //ログインしているかチェック
+        if (\Auth::check()) {
+            
+            $task = new Task;
+    
+            //タスク作成ビューを表示
+            return view('tasks.create', [
+                'task' => $task,
+            ]);
+            
+        
+        }else{
+            
+            return view('auth.login');
+        }
     }
 
     /**
@@ -50,23 +77,32 @@ class TasksController extends Controller
      * @return \Illuminate\Http\Response
      */
      
-    // postでtasks/にアクセスされた場合の「新規登録処理」
+    //新規タスクを追加された場合
     public function store(Request $request)
     {
-        // バリデーション
-        $request->validate([
-            'content' => 'required|max:255',
-            'status' => 'required|max:10'
-        ]);
-
-        //タスクを作成
-        $task = new Task;
-        $task->status = $request->status;
-        $task->content = $request->content;
-        $task->save();
-
-        // トップページへリダイレクトさせる
-        return redirect('/');
+        //ログインしているかチェック
+        if (\Auth::check()) {
+            
+            // バリデーション
+            $request->validate([
+                'content' => 'required|max:255',
+                'status' => 'required|max:10'
+            ]);
+    
+            //タスクを作成
+            $request->user()->tasks()->create([
+                'status' => $request->status,
+                'content' => $request->content,
+            ]);
+            
+            //トップページにリダイレクト
+            return redirect('/');
+            
+        }else{
+            
+            return view('auth.login');
+        }
+        
     }
 
     /**
@@ -76,16 +112,25 @@ class TasksController extends Controller
      * @return \Illuminate\Http\Response
      */
      
-    // getでtasks/（任意のid）にアクセスされた場合の「取得表示処理」
+    //タスク詳細画面
     public function show($id)
     {
         // idの値でタスクを検索して取得
         $task = Task::findOrFail($id);
+        
+        if(\Auth::id() === $task->user_id){
+            
+            //タスク詳細ビューでそれを表示
+            return view('tasks.show', [
+                
+                'task' => $task,
+            ]);
+            
+        }else{
 
-        //タスク詳細ビューでそれを表示
-        return view('tasks.show', [
-            'task' => $task,
-        ]);
+            return view('auth.login');
+            
+        }
     }
 
     /**
@@ -95,16 +140,25 @@ class TasksController extends Controller
      * @return \Illuminate\Http\Response
      */
      
-    // getでtasks/（任意のid）/editにアクセスされた場合の「更新画面表示処理」
+    //タスク詳細画面
     public function edit($id)
     {
-        // idの値でメッセージを検索して取得
-        $task = Task::findOrFail($id);
 
-        // メッセージ編集ビューでそれを表示
-        return view('tasks.edit', [
-            'task' => $task,
-        ]);
+        // idの値でタスクを検索して取得
+        $task = Task::findOrFail($id);
+        
+        if(\Auth::id() === $task->user_id){
+
+            //タスク詳細ビューでそれを表示
+            return view('tasks.edit', [
+                'task' => $task,
+            ]);
+            
+        }else{
+
+            return view('auth.login');
+            
+        }
     }
 
     /**
@@ -115,7 +169,7 @@ class TasksController extends Controller
      * @return \Illuminate\Http\Response
      */
      
-    // putまたはpatchでtasks/（任意のid）にアクセスされた場合の「更新処理」
+    //タスクの更新画面
     public function update(Request $request, $id)
     {
         // バリデーション
@@ -126,6 +180,7 @@ class TasksController extends Controller
         
         // idの値でタスクを検索して取得
         $task = Task::findOrFail($id);
+        
         //タスクを更新
         $task->status = $request->status;
         $task->content = $request->content;
@@ -142,15 +197,17 @@ class TasksController extends Controller
      * @return \Illuminate\Http\Response
      */
      
-    // deleteでtasks/（任意のid）にアクセスされた場合の「削除処理」
+    //タスクの削除
     public function destroy($id)
     {
         // idの値でタスクを検索して取得
         $task = Task::findOrFail($id);
-        //タスクを削除
-        $task->delete();
-
-        // トップページへリダイレクトさせる
-        return redirect('/');
+        
+        if (\Auth::id() === $task->user_id) {
+            
+            $task->delete();
+        }
+        
+        return back();
     }
 }
