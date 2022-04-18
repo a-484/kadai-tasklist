@@ -101,8 +101,8 @@ class TasksController extends Controller
             
         }else{
             
-            //トップページを表示
-            return view('welcome');
+            //トップページにリダイレクト
+            return redirect('/');
         }
         
     }
@@ -130,7 +130,7 @@ class TasksController extends Controller
             
         }else{
 
-            //トップページを表示
+            //トップページにリダイレクト
              return redirect('/');
             
         }
@@ -159,7 +159,7 @@ class TasksController extends Controller
             
         }else{
 
-            //トップページを表示
+            //トップページにリダイレクト
             return redirect('/');
             
         }
