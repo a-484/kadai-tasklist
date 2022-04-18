@@ -39,8 +39,8 @@ class TasksController extends Controller
         //ログインしていない場合
         }else{
             
-            //ログイン画面を表示
-            return view('auth.login');
+            //トップページを表示
+            return view('welcome');
         }
     }
 
@@ -66,7 +66,8 @@ class TasksController extends Controller
         
         }else{
             
-            return view('auth.login');
+            //トップページを表示
+            return view('welcome');
         }
     }
 
@@ -100,7 +101,8 @@ class TasksController extends Controller
             
         }else{
             
-            return view('auth.login');
+            //トップページを表示
+            return view('welcome');
         }
         
     }
@@ -128,7 +130,8 @@ class TasksController extends Controller
             
         }else{
 
-            return view('auth.login');
+            //トップページを表示
+            return view('welcome');
             
         }
     }
@@ -156,7 +159,8 @@ class TasksController extends Controller
             
         }else{
 
-            return view('auth.login');
+            //トップページを表示
+            return view('welcome');
             
         }
     }
