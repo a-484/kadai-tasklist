@@ -128,6 +128,12 @@ class TasksController extends Controller
                 'task' => $task,
             ]);
             
+        }else if(\Auth::id() !== $task->user_id){
+            
+            // トップページへリダイレクトさせる
+            return redirect('/');
+            
+            
         }else{
 
             //トップページを表示
@@ -156,6 +162,12 @@ class TasksController extends Controller
             return view('tasks.edit', [
                 'task' => $task,
             ]);
+            
+        }else if(\Auth::id() !== $task->user_id){
+            
+            // トップページへリダイレクトさせる
+            return redirect('/');
+            
             
         }else{
 
