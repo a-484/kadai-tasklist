@@ -128,16 +128,10 @@ class TasksController extends Controller
                 'task' => $task,
             ]);
             
-        }else if(\Auth::id() !== $task->user_id){
-            
-            // トップページへリダイレクトさせる
-            return redirect('/');
-            
-            
         }else{
 
             //トップページを表示
-            return view('welcome');
+             return redirect('/');
             
         }
     }
@@ -163,16 +157,10 @@ class TasksController extends Controller
                 'task' => $task,
             ]);
             
-        }else if(\Auth::id() !== $task->user_id){
-            
-            // トップページへリダイレクトさせる
-            return redirect('/');
-            
-            
         }else{
 
             //トップページを表示
-            return view('welcome');
+            return redirect('/');
             
         }
     }
